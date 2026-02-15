@@ -2,6 +2,18 @@ name: V2Ray Config Checker Pipeline
 
 on:
   workflow_dispatch:
+    inputs:
+      runner_size:
+        description: 'Runner size to use'
+        required: false
+        default: '16-cores'
+        type: choice
+        options:
+          - '4-cores'
+          - '8-cores'
+          - '16-cores'
+          - '32-cores'
+          - '64-cores'
   schedule:
     - cron: '0 */6 * * *' # Run every 6 hours
 
@@ -10,14 +22,27 @@ permissions:
 
 jobs:
   check-configs:
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        runner:
+          # ubuntu-latest-16-cores  # 16 vCPUs, 64 GB RAM — default powerhouse
+          # Uncomment below to run on multiple runners simultaneously:
+          # - ubuntu-latest-32-cores  # 32 vCPUs, 128 GB RAM
+          - ubuntu-latest-64-cores  # 64 vCPUs, 256 GB RAM
+
+    runs-on: ${{ github.event.inputs.runner_size && format('ubuntu-latest-{0}', github.event.inputs.runner_size) || matrix.runner }}
+    timeout-minutes: 180
+    concurrency:
+      group: configchecker-${{ matrix.runner }}
+      cancel-in-progress: false
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -35,6 +60,36 @@ jobs:
           xray version
           echo "✅ Xray Core installed"
 
+      - name: Tune System for High Concurrency
+        run: |
+          echo "⚡ Tuning system for high concurrency..."
+
+          # Increase file descriptor limits
+          sudo sysctl -w fs.file-max=2097152
+          ulimit -n 1048576 || true
+
+          # Increase port range for outbound connections
+          sudo sysctl -w net.ipv4.ip_local_port_range="1024 65535"
+
+          # Increase connection tracking and TCP settings
+          sudo sysctl -w net.core.somaxconn=65535
+          sudo sysctl -w net.ipv4.tcp_max_syn_backlog=65535
+          sudo sysctl -w net.ipv4.tcp_tw_reuse=1
+          sudo sysctl -w net.ipv4.tcp_fin_timeout=10
+          sudo sysctl -w net.core.netdev_max_backlog=65535
+          sudo sysctl -w net.core.rmem_max=16777216
+          sudo sysctl -w net.core.wmem_max=16777216
+
+          # Disable TCP timestamps to reduce overhead
+          sudo sysctl -w net.ipv4.tcp_timestamps=1
+
+          # Increase ARP cache
+          sudo sysctl -w net.ipv4.neigh.default.gc_thresh1=4096
+          sudo sysctl -w net.ipv4.neigh.default.gc_thresh2=8192
+          sudo sysctl -w net.ipv4.neigh.default.gc_thresh3=16384
+
+          echo "✅ System tuned for high concurrency"
+
       - name: Build Application
         run: |
           echo "🔨 Building configchecker..."
@@ -46,28 +101,36 @@ jobs:
         run: |
           echo "🔧 Preparing environment..."
           mkdir -p configs logs
-          
+
           # Show system info
-          echo "CPU Cores: $(nproc)"
-          echo "Memory: $(free -h | grep Mem | awk '{print $2}')"
-          echo "Disk: $(df -h . | tail -1 | awk '{print $4}') available"
-          echo "Runner Name: ${{ runner.name }}"
-          echo "Runner OS: ${{ runner.os }}"
+          echo "══════════════════════════════════"
+          echo "  SYSTEM INFORMATION"
+          echo "══════════════════════════════════"
+          echo "  CPU Cores: $(nproc)"
+          echo "  CPU Model: $(lscpu | grep 'Model name' | sed 's/Model name: *//')"
+          echo "  Memory: $(free -h | grep Mem | awk '{print $2}')"
+          echo "  Disk: $(df -h . | tail -1 | awk '{print $4}') available"
+          echo "  Runner: ${{ runner.name }}"
+          echo "  Runner OS: ${{ runner.os }}"
+          echo "  Runner Arch: ${{ runner.arch }}"
+          echo "══════════════════════════════════"
           echo ""
           echo "✅ Environment ready"
 
       - name: Run Config Checker
         env:
           RUNNER_NAME: ${{ runner.name }}
+          GOMAXPROCS: "0"  # Use all available CPUs
         run: |
           echo "🚀 Starting V2Ray Config Checker Pipeline..."
           echo "Runner: ${{ runner.name }}"
+          echo "Cores: $(nproc)"
           echo "Time: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           echo "─────────────────────────────────────"
-          
+
           # Run the application
           ./configchecker || true
-          
+
           echo ""
           echo "─────────────────────────────────────"
           echo "Pipeline execution completed"
@@ -78,12 +141,12 @@ jobs:
           echo "═══════════════════════════════════"
           echo "        RESULTS SUMMARY"
           echo "═══════════════════════════════════"
-          
+
           RUNNER_DIR="configs/${{ runner.name }}"
           if [ -d "$RUNNER_DIR" ]; then
             echo "Runner output directory: $RUNNER_DIR"
             ls -lh "$RUNNER_DIR/" 2>/dev/null || echo "  (empty)"
-            
+
             if [ -f "$RUNNER_DIR/worked.txt" ]; then
               WORKED_COUNT=$(wc -l < "$RUNNER_DIR/worked.txt" 2>/dev/null || echo "0")
               WORKED_SIZE=$(du -h "$RUNNER_DIR/worked.txt" 2>/dev/null | cut -f1 || echo "0")
@@ -94,12 +157,12 @@ jobs:
           else
             echo "No runner output directory found"
           fi
-          
+
           if [ -f "configs/configs.txt" ]; then
             CONFIGS_COUNT=$(wc -l < configs/configs.txt 2>/dev/null || echo "0")
             echo "  Total fetched configs: $CONFIGS_COUNT"
           fi
-          
+
           echo ""
           echo "Log files:"
           ls -lh logs/ 2>/dev/null || echo "  (no logs)"
@@ -118,16 +181,16 @@ jobs:
         if: always()
         run: |
           echo "📤 Pushing results to repository..."
-          
+
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           # Pull latest changes first to avoid conflicts
           git pull --rebase origin main || git pull --rebase origin master || true
-          
+
           # Add runner-specific results
           RUNNER_DIR="configs/${{ runner.name }}"
-          
+
           # Check if any result files exceed 100MB and handle
           find "$RUNNER_DIR" -type f -size +95M 2>/dev/null | while read bigfile; do
             echo "⚠️ Large file detected: $bigfile ($(du -h "$bigfile" | cut -f1))"
@@ -135,11 +198,11 @@ jobs:
             split -b 90M "$bigfile" "${bigfile}_part_"
             rm "$bigfile"
           done
-          
+
           # Stage changes
           git add configs/ || true
           git add logs/ || true
-          
+
           # Check if there are changes to commit
           if git diff --cached --quiet; then
             echo "No changes to commit"
@@ -150,14 +213,14 @@ jobs:
             if [ -f "$RUNNER_DIR/worked.txt" ]; then
               WORKED_COUNT=$(wc -l < "$RUNNER_DIR/worked.txt" 2>/dev/null || echo "0")
             fi
-            
+
             git commit -m "🔄 Update: ${WORKED_COUNT} healthy configs from ${{ runner.name }} at ${TIMESTAMP}" \
               -m "Runner: ${{ runner.name }}" \
               -m "Run ID: ${{ github.run_id }}" \
               -m "Healthy configs: ${WORKED_COUNT}"
-            
-            # Push with retry logic
-            MAX_RETRIES=5
+
+            # Push with retry logic (important for parallel runners)
+            MAX_RETRIES=10
             RETRY=0
             while [ $RETRY -lt $MAX_RETRIES ]; do
               if git push origin HEAD; then
@@ -166,11 +229,12 @@ jobs:
               else
                 RETRY=$((RETRY + 1))
                 echo "⚠️ Push failed, retrying ($RETRY/$MAX_RETRIES)..."
-                sleep $((RETRY * 2))
+                # Random sleep to avoid collision between parallel runners
+                sleep $(( (RANDOM % 5) + RETRY * 2 ))
                 git pull --rebase origin main || git pull --rebase origin master || true
               fi
             done
-            
+
             if [ $RETRY -eq $MAX_RETRIES ]; then
               echo "❌ Failed to push after $MAX_RETRIES retries"
               exit 1
