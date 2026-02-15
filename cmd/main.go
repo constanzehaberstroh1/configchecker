@@ -3,17 +3,22 @@ package main
 import (
 	"bufio"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"os"
 	"os/signal"
 	"path/filepath"
+	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"syscall"
 	"time"
 
 	"github.com/configchecker/internal/cleaner"
+	"github.com/configchecker/internal/core"
 	"github.com/configchecker/internal/cpupower"
 	"github.com/configchecker/internal/fetcher"
 	"github.com/configchecker/internal/logger"
@@ -73,6 +78,8 @@ func main() {
 		cmdMerge()
 	case "full":
 		cmdFull()
+	case "cores":
+		cmdCores()
 	default:
 		printUsage()
 		os.Exit(1)
@@ -83,12 +90,16 @@ func printUsage() {
 	fmt.Println("V2Ray Config Checker Pipeline")
 	fmt.Println("")
 	fmt.Println("Commands:")
-	fmt.Println("  fetch              Fetch subscriptions and save raw configs")
-	fmt.Println("  clean              Deduplicate and validate configs")
-	fmt.Println("  split <N>          Split configs into N chunks for workers")
-	fmt.Println("  test <file> <id>   Run pipeline on a single chunk")
-	fmt.Println("  merge              Merge all worker results")
-	fmt.Println("  full               Run entire pipeline in one shot")
+	fmt.Println("  fetch                    Fetch subscriptions and save raw configs")
+	fmt.Println("  clean                    Deduplicate and validate configs")
+	fmt.Println("  split <N>                Split configs into N chunks for workers")
+	fmt.Println("  test <file> <id>         Run pipeline on a single chunk")
+	fmt.Println("  merge                    Merge all worker results")
+	fmt.Println("  full                     Run entire pipeline in one shot")
+	fmt.Println("  cores                    List available proxy cores")
+	fmt.Println("")
+	fmt.Println("Environment:")
+	fmt.Println("  PROXY_CORE=xray          Select proxy core (xray, singbox, mihomo, v2ray, shoes)")
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -287,7 +298,10 @@ func cmdTest(chunkFile string, chunkID int) {
 		SpeedTimeout: 30 * time.Second,
 	}
 
-	pipe := pipeline.NewPipeline(pipeCfg, log)
+	// Create proxy core tester
+	tester := createTester(log)
+
+	pipe := pipeline.NewPipeline(pipeCfg, tester, log)
 
 	// Wrap in error recovery
 	var healthyCount int64
@@ -427,6 +441,15 @@ func cmdMerge() {
 
 	log.Info("After dedup: %d unique healthy configs", len(unique))
 
+	// Sort by speed (fastest first)
+	log.Info("Sorting configs by speed (fastest first)...")
+	unique = sortBySpeed(unique)
+	if len(unique) > 0 {
+		topSpeed := extractSpeed(unique[0])
+		botSpeed := extractSpeed(unique[len(unique)-1])
+		log.Info("Speed range: %.0f KB/s (fastest) → %.0f KB/s (slowest)", topSpeed, botSpeed)
+	}
+
 	// Write final output
 	outputFile := filepath.Join(outputDir, "worked.txt")
 	if err := writeLines(outputFile, unique); err != nil {
@@ -513,7 +536,8 @@ func cmdFull() {
 		PingTimeout:  20 * time.Second,
 		SpeedTimeout: 30 * time.Second,
 	}
-	pipe := pipeline.NewPipeline(pipeCfg, log)
+	tester := createTester(log)
+	pipe := pipeline.NewPipeline(pipeCfg, tester, log)
 	healthyCount, _ := pipe.Run(ctx)
 
 	// Step 5: File check
@@ -531,6 +555,46 @@ func cmdFull() {
 // ═══════════════════════════════════════════════════════════════
 // Helper Functions
 // ═══════════════════════════════════════════════════════════════
+
+// createTester creates a proxy tester using the selected core
+func createTester(log *logger.Logger) core.Tester {
+	coreName := os.Getenv("PROXY_CORE")
+	if coreName == "" {
+		coreName = "xray" // default
+	}
+
+	c, err := core.GetCore(coreName)
+	if err != nil {
+		log.Error("Unknown core '%s': %v", coreName, err)
+		log.Info("Available cores: %s", core.ListCoreNames())
+		os.Exit(1)
+	}
+
+	if !c.IsAvailable() {
+		log.Warn("Core '%s' binary '%s' not found in PATH", coreName, c.BinaryName())
+		log.Warn("Continuing anyway — tests will fail if binary is missing")
+	}
+
+	log.Info("Using proxy core: %s (binary: %s, available: %v)",
+		c.Name(), c.BinaryName(), c.IsAvailable())
+	log.Info("Supported protocols: %v", c.SupportedProtocols())
+
+	return core.NewManager(c, log)
+}
+
+func cmdCores() {
+	fmt.Println("Available Proxy Cores:")
+	fmt.Println("")
+	for _, info := range core.ListCores() {
+		avail := "❌"
+		if info.Available {
+			avail = "✅"
+		}
+		fmt.Printf("  %s %-10s  binary: %-12s  %s\n", avail, info.Name, info.Binary, strings.Join(info.Protocols, ", "))
+	}
+	fmt.Println("")
+	fmt.Println("Set PROXY_CORE env var to select: PROXY_CORE=singbox ./configchecker test ...")
+}
 
 func initLogger(prefix string) *logger.Logger {
 	logsDir := "logs"
@@ -734,4 +798,78 @@ func handleLargeFiles(log *logger.Logger, filePath string) {
 	}
 	os.Remove(filePath)
 	log.Info("Split into %d parts", partNum-1)
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Speed Sorting
+// ═══════════════════════════════════════════════════════════════
+
+var speedPattern = regexp.MustCompile(`xray:(\d+(?:\.\d+)?)KB/s`)
+
+// sortBySpeed sorts config lines by their xray speed tag, fastest first
+func sortBySpeed(configs []string) []string {
+	sort.SliceStable(configs, func(i, j int) bool {
+		return extractSpeed(configs[i]) > extractSpeed(configs[j])
+	})
+	return configs
+}
+
+// extractSpeed pulls the speed value from a config's remark/tag
+func extractSpeed(config string) float64 {
+	// For vmess:// configs, decode the base64 JSON and check "ps" field
+	if strings.HasPrefix(config, "vmess://") {
+		raw := strings.TrimPrefix(config, "vmess://")
+		if data, err := tryB64Decode(raw); err == nil {
+			var vmess map[string]interface{}
+			if json.Unmarshal(data, &vmess) == nil {
+				if ps, ok := vmess["ps"].(string); ok {
+					if m := speedPattern.FindStringSubmatch(ps); len(m) > 1 {
+						v, _ := strconv.ParseFloat(m[1], 64)
+						return v
+					}
+				}
+			}
+		}
+		return 0
+	}
+
+	// For URI-style configs, speed is in the fragment (#...xray:123KB/s)
+	hashIdx := strings.LastIndex(config, "#")
+	if hashIdx >= 0 {
+		fragment := config[hashIdx+1:]
+		decoded, err := url.QueryUnescape(fragment)
+		if err != nil {
+			decoded = fragment
+		}
+		if m := speedPattern.FindStringSubmatch(decoded); len(m) > 1 {
+			v, _ := strconv.ParseFloat(m[1], 64)
+			return v
+		}
+	}
+
+	return 0
+}
+
+func tryB64Decode(s string) ([]byte, error) {
+	s = strings.TrimSpace(s)
+	s = strings.TrimRight(s, "=")
+
+	padded := s
+	switch len(padded) % 4 {
+	case 2:
+		padded += "=="
+	case 3:
+		padded += "="
+	}
+
+	if data, err := base64.StdEncoding.DecodeString(padded); err == nil {
+		return data, nil
+	}
+	if data, err := base64.URLEncoding.DecodeString(padded); err == nil {
+		return data, nil
+	}
+	if data, err := base64.RawStdEncoding.DecodeString(s); err == nil {
+		return data, nil
+	}
+	return base64.RawURLEncoding.DecodeString(s)
 }

@@ -14,6 +14,16 @@ on:
           - '6'
           - '8'
           - '10'
+      core:
+        description: 'Proxy core for testing'
+        required: false
+        default: 'xray'
+        type: choice
+        options:
+          - 'xray'
+          - 'singbox'
+          - 'mihomo'
+          - 'v2ray'
   schedule:
     - cron: '0 0,5,10,15,20 * * *'    # Every 2h30m (on the hour)
     - cron: '30 2,7,12,17,22 * * *'    # Every 2h30m (on the half hour)
@@ -23,8 +33,11 @@ permissions:
 
 env:
   WORKER_COUNT: ${{ github.event.inputs.workers || '4' }}
+  PROXY_CORE: ${{ github.event.inputs.core || 'xray' }}
   GO_VERSION: '1.22'
   XRAY_VERSION: '1.8.24'
+  SINGBOX_VERSION: '1.11.0'
+  MIHOMO_VERSION: 'v1.19.0'
 
 # ══════════════════════════════════════════════════════════════
 #  ARCHITECTURE: Master → Workers → Collector
@@ -150,12 +163,41 @@ jobs:
       - name: Make Binary Executable
         run: chmod +x ./configchecker
 
-      - name: Install Xray Core
+      - name: Install Proxy Core
         run: |
-          wget -q "https://github.com/XTLS/Xray-core/releases/download/v${{ env.XRAY_VERSION }}/Xray-linux-64.zip" -O /tmp/xray.zip
-          sudo unzip -o /tmp/xray.zip -d /usr/local/bin/ xray
-          sudo chmod +x /usr/local/bin/xray
-          echo "✅ Xray $(xray version | head -1)"
+          echo "📦 Installing proxy core: $PROXY_CORE"
+          case "$PROXY_CORE" in
+            xray)
+              wget -q "https://github.com/XTLS/Xray-core/releases/download/v${{ env.XRAY_VERSION }}/Xray-linux-64.zip" -O /tmp/core.zip
+              sudo unzip -o /tmp/core.zip -d /usr/local/bin/ xray
+              sudo chmod +x /usr/local/bin/xray
+              echo "✅ $(xray version | head -1)"
+              ;;
+            singbox)
+              wget -q "https://github.com/SagerNet/sing-box/releases/download/v${{ env.SINGBOX_VERSION }}/sing-box-${{ env.SINGBOX_VERSION }}-linux-amd64.tar.gz" -O /tmp/core.tar.gz
+              tar -xzf /tmp/core.tar.gz -C /tmp/
+              sudo mv /tmp/sing-box-${{ env.SINGBOX_VERSION }}-linux-amd64/sing-box /usr/local/bin/
+              sudo chmod +x /usr/local/bin/sing-box
+              echo "✅ $(sing-box version | head -1)"
+              ;;
+            mihomo)
+              wget -q "https://github.com/MetaCubeX/mihomo/releases/download/${{ env.MIHOMO_VERSION }}/mihomo-linux-amd64-${{ env.MIHOMO_VERSION }}.gz" -O /tmp/mihomo.gz
+              gunzip /tmp/mihomo.gz
+              sudo mv /tmp/mihomo /usr/local/bin/mihomo
+              sudo chmod +x /usr/local/bin/mihomo
+              echo "✅ $(mihomo -v | head -1)"
+              ;;
+            v2ray)
+              wget -q "https://github.com/v2fly/v2ray-core/releases/latest/download/v2ray-linux-64.zip" -O /tmp/core.zip
+              sudo unzip -o /tmp/core.zip -d /usr/local/bin/ v2ray
+              sudo chmod +x /usr/local/bin/v2ray
+              echo "✅ $(v2ray version | head -1)"
+              ;;
+            *)
+              echo "❌ Unknown core: $PROXY_CORE"
+              exit 1
+              ;;
+          esac
 
       - name: Tune System for Concurrency
         run: |
@@ -192,6 +234,7 @@ jobs:
       - name: "Run Pipeline on Chunk ${{ matrix.chunk_id }}"
         env:
           RUNNER_NAME: ${{ runner.name }}
+          PROXY_CORE: ${{ env.PROXY_CORE }}
         run: |
           echo "� Worker ${{ matrix.chunk_id }} starting pipeline..."
           mkdir -p results/worker_${{ matrix.chunk_id }} logs

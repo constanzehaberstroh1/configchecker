@@ -14,9 +14,9 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/configchecker/internal/core"
 	"github.com/configchecker/internal/cpupower"
 	"github.com/configchecker/internal/logger"
-	"github.com/configchecker/internal/xray"
 )
 
 // Config holds pipeline configuration
@@ -37,9 +37,9 @@ type TestedConfig struct {
 
 // Pipeline implements the two-stack processing pipeline with dynamic resource allocation
 type Pipeline struct {
-	cfg     Config
-	log     *logger.Logger
-	xrayMgr *xray.Manager
+	cfg    Config
+	log    *logger.Logger
+	tester core.Tester
 
 	// Stack 1: Ping/connectivity queue
 	stack1 chan string
@@ -73,7 +73,7 @@ type Pipeline struct {
 }
 
 // NewPipeline creates a new two-stack pipeline
-func NewPipeline(cfg Config, log *logger.Logger) *Pipeline {
+func NewPipeline(cfg Config, tester core.Tester, log *logger.Logger) *Pipeline {
 	totalWorkers := cfg.CPUInfo.TotalWorkers
 
 	// Split workers: 60% for stack1 (ping), 40% for stack2 (speed)
@@ -91,13 +91,13 @@ func NewPipeline(cfg Config, log *logger.Logger) *Pipeline {
 		s2Min = 2
 	}
 
-	log.Info("Pipeline init: TotalWorkers=%d, Stack1Max=%d, Stack2Max=%d, Stack1Min=%d, Stack2Min=%d",
-		totalWorkers, s1Max, s2Max, s1Min, s2Min)
+	log.Info("Pipeline init: Core=%s, TotalWorkers=%d, Stack1Max=%d, Stack2Max=%d",
+		tester.GetCoreName(), totalWorkers, s1Max, s2Max)
 
 	return &Pipeline{
 		cfg:              cfg,
 		log:              log,
-		xrayMgr:          xray.NewManager(log),
+		tester:           tester,
 		stack1:           make(chan string, totalWorkers*2),
 		stack2:           make(chan string, totalWorkers),
 		outputCh:         make(chan TestedConfig, totalWorkers),
@@ -111,7 +111,7 @@ func NewPipeline(cfg Config, log *logger.Logger) *Pipeline {
 // Run executes the full pipeline
 func (p *Pipeline) Run(ctx context.Context) (int64, error) {
 	p.log.Info("Starting two-stack pipeline...")
-	p.log.Info("Xray binary: %s", p.xrayMgr.GetXrayPath())
+	p.log.Info("Core: %s (%s)", p.tester.GetCoreName(), p.tester.GetBinaryPath())
 
 	outputFile := filepath.Join(p.cfg.OutputDir, "worked.txt")
 	if err := os.MkdirAll(p.cfg.OutputDir, 0755); err != nil {
@@ -308,7 +308,7 @@ func (p *Pipeline) pingWorker(ctx context.Context, id int64) {
 
 		atomic.AddInt64(&p.stack1Processed, 1)
 
-		_, err := p.xrayMgr.PingConfig(ctx, config, p.cfg.PingTimeout)
+		_, err := p.tester.PingConfig(ctx, config, p.cfg.PingTimeout)
 		if err != nil {
 			atomic.AddInt64(&p.stack1Failed, 1)
 			continue
@@ -339,7 +339,7 @@ func (p *Pipeline) speedWorker(ctx context.Context, id int64) {
 
 		atomic.AddInt64(&p.stack2Processed, 1)
 
-		speed, _, err := p.xrayMgr.SpeedTest(ctx, config, p.cfg.SpeedTimeout)
+		speed, _, err := p.tester.SpeedTest(ctx, config, p.cfg.SpeedTimeout)
 		if err != nil {
 			// Failed to start download — broken config, drop it
 			atomic.AddInt64(&p.stack2Failed, 1)
