@@ -457,6 +457,14 @@ func cmdMerge() {
 		os.Exit(1)
 	}
 
+	// Copy to configs/lastworked.txt (always-updated known path)
+	lastWorkedFile := filepath.Join("configs", "lastworked.txt")
+	if err := copyFile(outputFile, lastWorkedFile); err != nil {
+		log.Warn("Could not copy to %s: %v", lastWorkedFile, err)
+	} else {
+		log.Info("📋 Copied to %s (%d configs)", lastWorkedFile, len(unique))
+	}
+
 	// Handle large files (>95MB)
 	handleLargeFiles(log, outputFile)
 
@@ -661,6 +669,15 @@ func readLines(path string) ([]string, error) {
 		}
 	}
 	return lines, scanner.Err()
+}
+
+func copyFile(src, dst string) error {
+	os.MkdirAll(filepath.Dir(dst), 0755)
+	data, err := os.ReadFile(src)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(dst, data, 0644)
 }
 
 func writeLines(path string, lines []string) error {
