@@ -1,0 +1,37 @@
+2026/02/15 20:07:29.264645 [INFO] ╔══════════════════════════════════════════════╗
+2026/02/15 20:07:29.264667 [INFO] ║     COLLECTOR: Merge Worker Results          ║
+2026/02/15 20:07:29.264672 [INFO] ╚══════════════════════════════════════════════╝
+2026/02/15 20:07:29.264869 [INFO]   Worker 0 (GitHub_Actions_1000000050): status=complete, processed=77324, healthy=5506, remaining=0
+2026/02/15 20:07:29.266834 [INFO]   → Collected 5506 healthy configs from worker_0
+2026/02/15 20:07:29.266902 [INFO]   Worker 1 (GitHub_Actions_1000000053): status=complete, processed=77324, healthy=5190, remaining=0
+2026/02/15 20:07:29.268573 [INFO]   → Collected 5190 healthy configs from worker_1
+2026/02/15 20:07:29.268627 [INFO]   Worker 2 (GitHub_Actions_1000000057): status=complete, processed=77324, healthy=4832, remaining=0
+2026/02/15 20:07:29.269716 [INFO]   → Collected 4832 healthy configs from worker_2
+2026/02/15 20:07:29.269785 [INFO]   Worker 3 (GitHub_Actions_1000000052): status=complete, processed=77324, healthy=4326, remaining=0
+2026/02/15 20:07:29.270349 [INFO]   → Collected 4326 healthy configs from worker_3
+2026/02/15 20:07:29.270410 [INFO]   Worker 4 (GitHub_Actions_1000000051): status=complete, processed=77324, healthy=4320, remaining=0
+2026/02/15 20:07:29.271635 [INFO]   → Collected 4320 healthy configs from worker_4
+2026/02/15 20:07:29.271698 [INFO]   Worker 5 (GitHub_Actions_1000000055): status=complete, processed=77324, healthy=4080, remaining=0
+2026/02/15 20:07:29.272270 [INFO]   → Collected 4080 healthy configs from worker_5
+2026/02/15 20:07:29.272326 [INFO]   Worker 6 (GitHub_Actions_1000000058): status=complete, processed=77324, healthy=4062, remaining=0
+2026/02/15 20:07:29.273731 [INFO]   → Collected 4062 healthy configs from worker_6
+2026/02/15 20:07:29.273791 [INFO]   Worker 7 (GitHub_Actions_1000000049): status=complete, processed=77323, healthy=4139, remaining=0
+2026/02/15 20:07:29.274620 [INFO]   → Collected 4139 healthy configs from worker_7
+2026/02/15 20:07:29.274689 [INFO]   Worker 8 (GitHub_Actions_1000000054): status=complete, processed=77323, healthy=3561, remaining=0
+2026/02/15 20:07:29.275390 [INFO]   → Collected 3561 healthy configs from worker_8
+2026/02/15 20:07:29.275438 [INFO]   Worker 9 (GitHub_Actions_1000000056): status=complete, processed=77323, healthy=3929, remaining=0
+2026/02/15 20:07:29.276524 [INFO]   → Collected 3929 healthy configs from worker_9
+2026/02/15 20:07:29.276570 [INFO] 
+2026/02/15 20:07:29.276577 [INFO] ╔══════════════════════════════════════════════╗
+2026/02/15 20:07:29.276582 [INFO] ║            MERGE SUMMARY                     ║
+2026/02/15 20:07:29.276588 [INFO] ╠══════════════════════════════════════════════╣
+2026/02/15 20:07:29.276594 [INFO] ║  Workers reported: 10                        ║
+2026/02/15 20:07:29.276600 [INFO] ║  Total processed:  773237                    ║
+2026/02/15 20:07:29.276605 [INFO] ║  Total healthy:    43945                     ║
+2026/02/15 20:07:29.276609 [INFO] ║  Total failed:     729292                    ║
+2026/02/15 20:07:29.276614 [INFO] ╚══════════════════════════════════════════════╝
+2026/02/15 20:07:29.284053 [INFO] After dedup: 43941 unique healthy configs
+2026/02/15 20:07:29.284074 [INFO] Sorting configs by speed (fastest first)...
+2026/02/15 20:07:31.546834 [INFO] Speed range: 7932801 KB/s (fastest) → 0 KB/s (slowest)
+2026/02/15 20:07:31.555373 [INFO] Output file size: 10.20 MB (within limits)
+2026/02/15 20:07:31.555542 [INFO] ✅ Merge complete: 43941 healthy configs → configs/GitHub_Actions_1000000075/worked.txt
