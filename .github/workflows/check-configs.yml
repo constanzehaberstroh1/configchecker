@@ -1,0 +1,178 @@
+name: V2Ray Config Checker Pipeline
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *' # Run every 6 hours
+
+permissions:
+  contents: write
+
+jobs:
+  check-configs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache: true
+
+      - name: Install Xray Core
+        run: |
+          echo "📦 Installing Xray Core..."
+          XRAY_VERSION="1.8.24"
+          wget -q "https://github.com/XTLS/Xray-core/releases/download/v${XRAY_VERSION}/Xray-linux-64.zip" -O /tmp/xray.zip
+          sudo unzip -o /tmp/xray.zip -d /usr/local/bin/ xray
+          sudo chmod +x /usr/local/bin/xray
+          xray version
+          echo "✅ Xray Core installed"
+
+      - name: Build Application
+        run: |
+          echo "🔨 Building configchecker..."
+          go mod tidy
+          go build -ldflags="-s -w" -o configchecker ./cmd/
+          echo "✅ Build complete"
+
+      - name: Prepare Environment
+        run: |
+          echo "🔧 Preparing environment..."
+          mkdir -p configs logs
+          
+          # Show system info
+          echo "CPU Cores: $(nproc)"
+          echo "Memory: $(free -h | grep Mem | awk '{print $2}')"
+          echo "Disk: $(df -h . | tail -1 | awk '{print $4}') available"
+          echo "Runner Name: ${{ runner.name }}"
+          echo "Runner OS: ${{ runner.os }}"
+          echo ""
+          echo "✅ Environment ready"
+
+      - name: Run Config Checker
+        env:
+          RUNNER_NAME: ${{ runner.name }}
+        run: |
+          echo "🚀 Starting V2Ray Config Checker Pipeline..."
+          echo "Runner: ${{ runner.name }}"
+          echo "Time: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "─────────────────────────────────────"
+          
+          # Run the application
+          ./configchecker || true
+          
+          echo ""
+          echo "─────────────────────────────────────"
+          echo "Pipeline execution completed"
+
+      - name: Show Results Summary
+        if: always()
+        run: |
+          echo "═══════════════════════════════════"
+          echo "        RESULTS SUMMARY"
+          echo "═══════════════════════════════════"
+          
+          RUNNER_DIR="configs/${{ runner.name }}"
+          if [ -d "$RUNNER_DIR" ]; then
+            echo "Runner output directory: $RUNNER_DIR"
+            ls -lh "$RUNNER_DIR/" 2>/dev/null || echo "  (empty)"
+            
+            if [ -f "$RUNNER_DIR/worked.txt" ]; then
+              WORKED_COUNT=$(wc -l < "$RUNNER_DIR/worked.txt" 2>/dev/null || echo "0")
+              WORKED_SIZE=$(du -h "$RUNNER_DIR/worked.txt" 2>/dev/null | cut -f1 || echo "0")
+              echo ""
+              echo "  Healthy configs: $WORKED_COUNT"
+              echo "  File size: $WORKED_SIZE"
+            fi
+          else
+            echo "No runner output directory found"
+          fi
+          
+          if [ -f "configs/configs.txt" ]; then
+            CONFIGS_COUNT=$(wc -l < configs/configs.txt 2>/dev/null || echo "0")
+            echo "  Total fetched configs: $CONFIGS_COUNT"
+          fi
+          
+          echo ""
+          echo "Log files:"
+          ls -lh logs/ 2>/dev/null || echo "  (no logs)"
+          echo "═══════════════════════════════════"
+
+      - name: Upload Logs as Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-${{ runner.name }}-${{ github.run_id }}
+          path: logs/
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Commit and Push Results
+        if: always()
+        run: |
+          echo "📤 Pushing results to repository..."
+          
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Pull latest changes first to avoid conflicts
+          git pull --rebase origin main || git pull --rebase origin master || true
+          
+          # Add runner-specific results
+          RUNNER_DIR="configs/${{ runner.name }}"
+          
+          # Check if any result files exceed 100MB and handle
+          find "$RUNNER_DIR" -type f -size +95M 2>/dev/null | while read bigfile; do
+            echo "⚠️ Large file detected: $bigfile ($(du -h "$bigfile" | cut -f1))"
+            echo "  Splitting into parts..."
+            split -b 90M "$bigfile" "${bigfile}_part_"
+            rm "$bigfile"
+          done
+          
+          # Stage changes
+          git add configs/ || true
+          git add logs/ || true
+          
+          # Check if there are changes to commit
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            # Commit with descriptive message
+            TIMESTAMP=$(date -u +%Y-%m-%d_%H-%M-%S)
+            WORKED_COUNT="0"
+            if [ -f "$RUNNER_DIR/worked.txt" ]; then
+              WORKED_COUNT=$(wc -l < "$RUNNER_DIR/worked.txt" 2>/dev/null || echo "0")
+            fi
+            
+            git commit -m "🔄 Update: ${WORKED_COUNT} healthy configs from ${{ runner.name }} at ${TIMESTAMP}" \
+              -m "Runner: ${{ runner.name }}" \
+              -m "Run ID: ${{ github.run_id }}" \
+              -m "Healthy configs: ${WORKED_COUNT}"
+            
+            # Push with retry logic
+            MAX_RETRIES=5
+            RETRY=0
+            while [ $RETRY -lt $MAX_RETRIES ]; do
+              if git push origin HEAD; then
+                echo "✅ Successfully pushed results"
+                break
+              else
+                RETRY=$((RETRY + 1))
+                echo "⚠️ Push failed, retrying ($RETRY/$MAX_RETRIES)..."
+                sleep $((RETRY * 2))
+                git pull --rebase origin main || git pull --rebase origin master || true
+              fi
+            done
+            
+            if [ $RETRY -eq $MAX_RETRIES ]; then
+              echo "❌ Failed to push after $MAX_RETRIES retries"
+              exit 1
+            fi
+          fi
