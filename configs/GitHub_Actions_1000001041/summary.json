@@ -1,0 +1,73 @@
+{
+  "runner": "GitHub_Actions_1000001041",
+  "timestamp": "2026-03-07T23:31:01Z",
+  "total_failed": 685982,
+  "total_healthy": 34137,
+  "total_processed": 720121,
+  "workers": [
+    {
+      "chunk_id": 0,
+      "runner_name": "GitHub_Actions_1000001037",
+      "status": "complete",
+      "total_in_chunk": 180031,
+      "processed": 180031,
+      "ping_pass": 12405,
+      "ping_fail": 167626,
+      "speed_pass": 11047,
+      "speed_fail": 1358,
+      "healthy_output": 11047,
+      "remaining": 0,
+      "started_at": "2026-03-07T22:51:05Z",
+      "finished_at": "2026-03-07T23:30:11Z",
+      "duration_secs": 2346.011558819
+    },
+    {
+      "chunk_id": 1,
+      "runner_name": "GitHub_Actions_1000001040",
+      "status": "complete",
+      "total_in_chunk": 180030,
+      "processed": 180030,
+      "ping_pass": 10108,
+      "ping_fail": 169922,
+      "speed_pass": 8759,
+      "speed_fail": 1349,
+      "healthy_output": 8759,
+      "remaining": 0,
+      "started_at": "2026-03-07T22:50:59Z",
+      "finished_at": "2026-03-07T23:27:17Z",
+      "duration_secs": 2177.916816523
+    },
+    {
+      "chunk_id": 2,
+      "runner_name": "GitHub_Actions_1000001039",
+      "status": "complete",
+      "total_in_chunk": 180030,
+      "processed": 180030,
+      "ping_pass": 8255,
+      "ping_fail": 171775,
+      "speed_pass": 7366,
+      "speed_fail": 889,
+      "healthy_output": 7366,
+      "remaining": 0,
+      "started_at": "2026-03-07T22:51:03Z",
+      "finished_at": "2026-03-07T23:27:09Z",
+      "duration_secs": 2166.836879375
+    },
+    {
+      "chunk_id": 3,
+      "runner_name": "GitHub_Actions_1000001038",
+      "status": "complete",
+      "total_in_chunk": 180030,
+      "processed": 180030,
+      "ping_pass": 7843,
+      "ping_fail": 172187,
+      "speed_pass": 6967,
+      "speed_fail": 876,
+      "healthy_output": 6967,
+      "remaining": 0,
+      "started_at": "2026-03-07T22:51:06Z",
+      "finished_at": "2026-03-07T23:21:37Z",
+      "duration_secs": 1831.452776067
+    }
+  ]
+}
