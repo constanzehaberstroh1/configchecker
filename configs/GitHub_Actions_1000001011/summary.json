@@ -1,0 +1,73 @@
+{
+  "runner": "GitHub_Actions_1000001011",
+  "timestamp": "2026-03-07T11:02:23Z",
+  "total_failed": 709835,
+  "total_healthy": 33554,
+  "total_processed": 743390,
+  "workers": [
+    {
+      "chunk_id": 0,
+      "runner_name": "GitHub_Actions_1000001010",
+      "status": "complete",
+      "total_in_chunk": 185848,
+      "processed": 185848,
+      "ping_pass": 10756,
+      "ping_fail": 175092,
+      "speed_pass": 9363,
+      "speed_fail": 1393,
+      "healthy_output": 9363,
+      "remaining": 0,
+      "started_at": "2026-03-07T10:22:55Z",
+      "finished_at": "2026-03-07T11:01:40Z",
+      "duration_secs": 2324.881126158
+    },
+    {
+      "chunk_id": 1,
+      "runner_name": "GitHub_Actions_1000001009",
+      "status": "complete",
+      "total_in_chunk": 185848,
+      "processed": 185848,
+      "ping_pass": 9453,
+      "ping_fail": 176395,
+      "speed_pass": 8211,
+      "speed_fail": 1242,
+      "healthy_output": 8211,
+      "remaining": 0,
+      "started_at": "2026-03-07T10:22:54Z",
+      "finished_at": "2026-03-07T11:00:13Z",
+      "duration_secs": 2238.673715886
+    },
+    {
+      "chunk_id": 2,
+      "runner_name": "GitHub_Actions_1000001007",
+      "status": "complete",
+      "total_in_chunk": 185847,
+      "processed": 185847,
+      "ping_pass": 9487,
+      "ping_fail": 176360,
+      "speed_pass": 8337,
+      "speed_fail": 1150,
+      "healthy_output": 8337,
+      "remaining": 0,
+      "started_at": "2026-03-07T10:22:59Z",
+      "finished_at": "2026-03-07T11:00:33Z",
+      "duration_secs": 2254.055281706
+    },
+    {
+      "chunk_id": 3,
+      "runner_name": "GitHub_Actions_1000001008",
+      "status": "complete",
+      "total_in_chunk": 185847,
+      "processed": 185847,
+      "ping_pass": 8577,
+      "ping_fail": 177270,
+      "speed_pass": 7644,
+      "speed_fail": 933,
+      "healthy_output": 7644,
+      "remaining": 0,
+      "started_at": "2026-03-07T10:22:58Z",
+      "finished_at": "2026-03-07T10:59:48Z",
+      "duration_secs": 2210.204328608
+    }
+  ]
+}
