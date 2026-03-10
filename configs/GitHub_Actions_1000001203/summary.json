@@ -1,0 +1,73 @@
+{
+  "runner": "GitHub_Actions_1000001203",
+  "timestamp": "2026-03-10T16:40:48Z",
+  "total_failed": 691378,
+  "total_healthy": 30048,
+  "total_processed": 721430,
+  "workers": [
+    {
+      "chunk_id": 0,
+      "runner_name": "GitHub_Actions_1000001202",
+      "status": "complete",
+      "total_in_chunk": 180358,
+      "processed": 180358,
+      "ping_pass": 9854,
+      "ping_fail": 170504,
+      "speed_pass": 8438,
+      "speed_fail": 1416,
+      "healthy_output": 8438,
+      "remaining": 0,
+      "started_at": "2026-03-10T16:00:38Z",
+      "finished_at": "2026-03-10T16:38:06Z",
+      "duration_secs": 2248.292519109
+    },
+    {
+      "chunk_id": 1,
+      "runner_name": "GitHub_Actions_1000001201",
+      "status": "complete",
+      "total_in_chunk": 180358,
+      "processed": 180358,
+      "ping_pass": 8698,
+      "ping_fail": 171660,
+      "speed_pass": 7389,
+      "speed_fail": 1309,
+      "healthy_output": 7389,
+      "remaining": 0,
+      "started_at": "2026-03-10T16:00:37Z",
+      "finished_at": "2026-03-10T16:35:21Z",
+      "duration_secs": 2083.823036944
+    },
+    {
+      "chunk_id": 2,
+      "runner_name": "GitHub_Actions_1000001200",
+      "status": "complete",
+      "total_in_chunk": 180357,
+      "processed": 180357,
+      "ping_pass": 8312,
+      "ping_fail": 172045,
+      "speed_pass": 7102,
+      "speed_fail": 1210,
+      "healthy_output": 7102,
+      "remaining": 0,
+      "started_at": "2026-03-10T16:00:38Z",
+      "finished_at": "2026-03-10T16:35:03Z",
+      "duration_secs": 2065.818976955
+    },
+    {
+      "chunk_id": 3,
+      "runner_name": "GitHub_Actions_1000001199",
+      "status": "complete",
+      "total_in_chunk": 180357,
+      "processed": 180357,
+      "ping_pass": 8133,
+      "ping_fail": 172224,
+      "speed_pass": 7123,
+      "speed_fail": 1010,
+      "healthy_output": 7123,
+      "remaining": 0,
+      "started_at": "2026-03-10T16:02:00Z",
+      "finished_at": "2026-03-10T16:35:39Z",
+      "duration_secs": 2019.344532418
+    }
+  ]
+}
