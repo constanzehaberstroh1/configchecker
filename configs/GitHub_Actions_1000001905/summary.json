@@ -1,0 +1,73 @@
+{
+  "runner": "GitHub_Actions_1000001905",
+  "timestamp": "2026-03-22T06:32:58Z",
+  "total_failed": 694347,
+  "total_healthy": 33916,
+  "total_processed": 728266,
+  "workers": [
+    {
+      "chunk_id": 0,
+      "runner_name": "GitHub_Actions_1000001901",
+      "status": "complete",
+      "total_in_chunk": 182067,
+      "processed": 182067,
+      "ping_pass": 11617,
+      "ping_fail": 170450,
+      "speed_pass": 10392,
+      "speed_fail": 1225,
+      "healthy_output": 10392,
+      "remaining": 0,
+      "started_at": "2026-03-22T05:54:00Z",
+      "finished_at": "2026-03-22T06:32:04Z",
+      "duration_secs": 2283.745275816
+    },
+    {
+      "chunk_id": 1,
+      "runner_name": "GitHub_Actions_1000001903",
+      "status": "complete",
+      "total_in_chunk": 182067,
+      "processed": 182067,
+      "ping_pass": 9650,
+      "ping_fail": 172417,
+      "speed_pass": 8595,
+      "speed_fail": 1055,
+      "healthy_output": 8595,
+      "remaining": 0,
+      "started_at": "2026-03-22T05:54:00Z",
+      "finished_at": "2026-03-22T06:26:31Z",
+      "duration_secs": 1950.797879461
+    },
+    {
+      "chunk_id": 2,
+      "runner_name": "GitHub_Actions_1000001904",
+      "status": "complete",
+      "total_in_chunk": 182066,
+      "processed": 182066,
+      "ping_pass": 8530,
+      "ping_fail": 173536,
+      "speed_pass": 7638,
+      "speed_fail": 892,
+      "healthy_output": 7638,
+      "remaining": 0,
+      "started_at": "2026-03-22T05:53:58Z",
+      "finished_at": "2026-03-22T06:29:27Z",
+      "duration_secs": 2128.576376709
+    },
+    {
+      "chunk_id": 3,
+      "runner_name": "GitHub_Actions_1000001902",
+      "status": "complete",
+      "total_in_chunk": 182066,
+      "processed": 182066,
+      "ping_pass": 8160,
+      "ping_fail": 173906,
+      "speed_pass": 7294,
+      "speed_fail": 866,
+      "healthy_output": 7294,
+      "remaining": 0,
+      "started_at": "2026-03-22T05:53:59Z",
+      "finished_at": "2026-03-22T06:27:53Z",
+      "duration_secs": 2034.124993281
+    }
+  ]
+}
