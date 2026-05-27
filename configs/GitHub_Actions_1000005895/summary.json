@@ -1,0 +1,57 @@
+{
+  "runner": "GitHub_Actions_1000005895",
+  "timestamp": "2026-05-27T21:23:47Z",
+  "total_failed": 1614338,
+  "total_healthy": 29805,
+  "total_processed": 1644143,
+  "workers": [
+    {
+      "chunk_id": 0,
+      "runner_name": "GitHub_Actions_1000005893",
+      "status": "complete",
+      "total_in_chunk": 548048,
+      "processed": 548048,
+      "ping_pass": 14307,
+      "ping_fail": 533741,
+      "speed_pass": 11666,
+      "speed_fail": 2641,
+      "healthy_output": 11666,
+      "remaining": 0,
+      "started_at": "2026-05-27T19:43:08Z",
+      "finished_at": "2026-05-27T21:20:15Z",
+      "duration_secs": 5826.79772575
+    },
+    {
+      "chunk_id": 1,
+      "runner_name": "GitHub_Actions_1000005891",
+      "status": "complete",
+      "total_in_chunk": 548048,
+      "processed": 548048,
+      "ping_pass": 11588,
+      "ping_fail": 536460,
+      "speed_pass": 9418,
+      "speed_fail": 2170,
+      "healthy_output": 9418,
+      "remaining": 0,
+      "started_at": "2026-05-27T19:44:14Z",
+      "finished_at": "2026-05-27T21:20:03Z",
+      "duration_secs": 5749.447982837
+    },
+    {
+      "chunk_id": 3,
+      "runner_name": "GitHub_Actions_1000005892",
+      "status": "complete",
+      "total_in_chunk": 548047,
+      "processed": 548047,
+      "ping_pass": 11026,
+      "ping_fail": 537021,
+      "speed_pass": 8721,
+      "speed_fail": 2305,
+      "healthy_output": 8721,
+      "remaining": 0,
+      "started_at": "2026-05-27T19:43:26Z",
+      "finished_at": "2026-05-27T21:14:11Z",
+      "duration_secs": 5445.798324398
+    }
+  ]
+}
