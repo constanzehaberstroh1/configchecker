@@ -1,0 +1,73 @@
+{
+  "runner": "GitHub_Actions_1000007622",
+  "timestamp": "2026-06-26T21:33:46Z",
+  "total_failed": 2560793,
+  "total_healthy": 79410,
+  "total_processed": 2640204,
+  "workers": [
+    {
+      "chunk_id": 0,
+      "runner_name": "GitHub_Actions_1000007616",
+      "status": "complete",
+      "total_in_chunk": 660051,
+      "processed": 660051,
+      "ping_pass": 25633,
+      "ping_fail": 634418,
+      "speed_pass": 21861,
+      "speed_fail": 3772,
+      "healthy_output": 21861,
+      "remaining": 0,
+      "started_at": "2026-06-26T19:27:46Z",
+      "finished_at": "2026-06-26T21:30:11Z",
+      "duration_secs": 7345.080477274
+    },
+    {
+      "chunk_id": 1,
+      "runner_name": "GitHub_Actions_1000007615",
+      "status": "complete",
+      "total_in_chunk": 660051,
+      "processed": 660051,
+      "ping_pass": 23869,
+      "ping_fail": 636182,
+      "speed_pass": 19996,
+      "speed_fail": 3873,
+      "healthy_output": 19996,
+      "remaining": 0,
+      "started_at": "2026-06-26T19:26:54Z",
+      "finished_at": "2026-06-26T21:17:59Z",
+      "duration_secs": 6665.158766347
+    },
+    {
+      "chunk_id": 2,
+      "runner_name": "GitHub_Actions_1000007614",
+      "status": "complete",
+      "total_in_chunk": 660051,
+      "processed": 660051,
+      "ping_pass": 22992,
+      "ping_fail": 637059,
+      "speed_pass": 19381,
+      "speed_fail": 3611,
+      "healthy_output": 19381,
+      "remaining": 0,
+      "started_at": "2026-06-26T19:26:59Z",
+      "finished_at": "2026-06-26T21:24:32Z",
+      "duration_secs": 7052.796187289
+    },
+    {
+      "chunk_id": 3,
+      "runner_name": "GitHub_Actions_1000007613",
+      "status": "complete",
+      "total_in_chunk": 660051,
+      "processed": 660051,
+      "ping_pass": 22111,
+      "ping_fail": 637940,
+      "speed_pass": 18173,
+      "speed_fail": 3938,
+      "healthy_output": 18173,
+      "remaining": 0,
+      "started_at": "2026-06-26T19:26:55Z",
+      "finished_at": "2026-06-26T21:25:15Z",
+      "duration_secs": 7099.19907499
+    }
+  ]
+}
