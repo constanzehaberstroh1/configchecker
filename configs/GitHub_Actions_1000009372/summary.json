@@ -1,0 +1,41 @@
+{
+  "runner": "GitHub_Actions_1000009372",
+  "timestamp": "2026-07-26T02:09:54Z",
+  "total_failed": 1380866,
+  "total_healthy": 173534,
+  "total_processed": 1465730,
+  "workers": [
+    {
+      "chunk_id": 1,
+      "runner_name": "GitHub_Actions_1000009371",
+      "status": "complete",
+      "total_in_chunk": 732865,
+      "processed": 732865,
+      "ping_pass": 46879,
+      "ping_fail": 685986,
+      "speed_pass": 42712,
+      "speed_fail": 4167,
+      "healthy_output": 42712,
+      "remaining": 0,
+      "started_at": "2026-07-25T23:38:18Z",
+      "finished_at": "2026-07-26T02:03:05Z",
+      "duration_secs": 8686.819729303
+    },
+    {
+      "chunk_id": 2,
+      "runner_name": "GitHub_Actions_1000009368",
+      "status": "complete",
+      "total_in_chunk": 732865,
+      "processed": 732865,
+      "ping_pass": 46455,
+      "ping_fail": 686410,
+      "speed_pass": 42152,
+      "speed_fail": 4303,
+      "healthy_output": 42152,
+      "remaining": 0,
+      "started_at": "2026-07-25T23:38:23Z",
+      "finished_at": "2026-07-26T02:03:26Z",
+      "duration_secs": 8702.806325176
+    }
+  ]
+}

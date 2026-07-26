@@ -1,0 +1,24 @@
+2026/07/26 02:09:49.480124 [INFO] ╔══════════════════════════════════════════════╗
+2026/07/26 02:09:49.480146 [INFO] ║     COLLECTOR: Merge Worker Results          ║
+2026/07/26 02:09:49.480150 [INFO] ╚══════════════════════════════════════════════╝
+2026/07/26 02:09:49.488403 [INFO]   → Collected 46318 healthy configs from worker_0
+2026/07/26 02:09:49.488553 [INFO]   Worker 1 (GitHub_Actions_1000009371): status=complete, processed=732865, healthy=42712, remaining=0
+2026/07/26 02:09:49.494188 [INFO]   → Collected 42712 healthy configs from worker_1
+2026/07/26 02:09:49.494288 [INFO]   Worker 2 (GitHub_Actions_1000009368): status=complete, processed=732865, healthy=42152, remaining=0
+2026/07/26 02:09:49.500420 [INFO]   → Collected 42152 healthy configs from worker_2
+2026/07/26 02:09:49.508326 [INFO]   → Collected 42353 healthy configs from worker_3
+2026/07/26 02:09:49.508361 [INFO] 
+2026/07/26 02:09:49.508366 [INFO] ╔══════════════════════════════════════════════╗
+2026/07/26 02:09:49.508369 [INFO] ║            MERGE SUMMARY                     ║
+2026/07/26 02:09:49.508372 [INFO] ╠══════════════════════════════════════════════╣
+2026/07/26 02:09:49.508379 [INFO] ║  Workers reported: 2                         ║
+2026/07/26 02:09:49.508384 [INFO] ║  Total processed:  1465730                   ║
+2026/07/26 02:09:49.508388 [INFO] ║  Total healthy:    173535                    ║
+2026/07/26 02:09:49.508392 [INFO] ║  Total failed:     1380866                   ║
+2026/07/26 02:09:49.508396 [INFO] ╚══════════════════════════════════════════════╝
+2026/07/26 02:09:49.552060 [INFO] After dedup: 173534 unique healthy configs
+2026/07/26 02:09:49.552091 [INFO] Sorting configs by speed (fastest first)...
+2026/07/26 02:09:54.641276 [INFO] Speed range: 13586456 KB/s (fastest) → 0 KB/s (slowest)
+2026/07/26 02:09:54.683399 [INFO] 📋 Copied to configs/lastworked.txt (173534 configs)
+2026/07/26 02:09:54.683461 [INFO] Output file size: 37.92 MB (within limits)
+2026/07/26 02:09:54.683675 [INFO] ✅ Merge complete: 173534 healthy configs → configs/GitHub_Actions_1000009372/worked.txt
