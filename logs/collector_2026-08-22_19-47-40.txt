@@ -1,0 +1,26 @@
+2026/08/22 19:47:40.740628 [INFO] ╔══════════════════════════════════════════════╗
+2026/08/22 19:47:40.740646 [INFO] ║     COLLECTOR: Merge Worker Results          ║
+2026/08/22 19:47:40.740648 [INFO] ╚══════════════════════════════════════════════╝
+2026/08/22 19:47:40.740792 [INFO]   Worker 0 (GitHub_Actions_1000011012): status=complete, processed=531524, healthy=19814, remaining=0
+2026/08/22 19:47:40.745774 [INFO]   → Collected 19814 healthy configs from worker_0
+2026/08/22 19:47:40.745833 [INFO]   Worker 1 (GitHub_Actions_1000011013): status=complete, processed=531524, healthy=15721, remaining=0
+2026/08/22 19:47:40.748687 [INFO]   → Collected 15721 healthy configs from worker_1
+2026/08/22 19:47:40.748747 [INFO]   Worker 2 (GitHub_Actions_1000011011): status=complete, processed=531523, healthy=13846, remaining=0
+2026/08/22 19:47:40.751659 [INFO]   → Collected 13846 healthy configs from worker_2
+2026/08/22 19:47:40.751764 [INFO]   Worker 3 (GitHub_Actions_1000011010): status=complete, processed=531523, healthy=14353, remaining=0
+2026/08/22 19:47:40.753782 [INFO]   → Collected 14353 healthy configs from worker_3
+2026/08/22 19:47:40.753796 [INFO] 
+2026/08/22 19:47:40.753799 [INFO] ╔══════════════════════════════════════════════╗
+2026/08/22 19:47:40.753801 [INFO] ║            MERGE SUMMARY                     ║
+2026/08/22 19:47:40.753803 [INFO] ╠══════════════════════════════════════════════╣
+2026/08/22 19:47:40.753806 [INFO] ║  Workers reported: 4                         ║
+2026/08/22 19:47:40.753809 [INFO] ║  Total processed:  2126094                   ║
+2026/08/22 19:47:40.753811 [INFO] ║  Total healthy:    63734                     ║
+2026/08/22 19:47:40.753812 [INFO] ║  Total failed:     2062360                   ║
+2026/08/22 19:47:40.753814 [INFO] ╚══════════════════════════════════════════════╝
+2026/08/22 19:47:40.768239 [INFO] After dedup: 63734 unique healthy configs
+2026/08/22 19:47:40.768258 [INFO] Sorting configs by speed (fastest first)...
+2026/08/22 19:47:43.637281 [INFO] Speed range: 2079985 KB/s (fastest) → 0 KB/s (slowest)
+2026/08/22 19:47:43.713938 [INFO] 📋 Copied to configs/lastworked.txt (63734 configs)
+2026/08/22 19:47:43.713982 [INFO] Output file size: 14.98 MB (within limits)
+2026/08/22 19:47:43.714171 [INFO] ✅ Merge complete: 63734 healthy configs → configs/GitHub_Actions_1000011014/worked.txt
