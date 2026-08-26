@@ -1,0 +1,24 @@
+2026/08/26 16:14:32.736860 [INFO] ╔══════════════════════════════════════════════╗
+2026/08/26 16:14:32.736889 [INFO] ║     COLLECTOR: Merge Worker Results          ║
+2026/08/26 16:14:32.736897 [INFO] ╚══════════════════════════════════════════════╝
+2026/08/26 16:14:32.741086 [INFO]   → Collected 15826 healthy configs from worker_0
+2026/08/26 16:14:32.742956 [INFO]   → Collected 10228 healthy configs from worker_1
+2026/08/26 16:14:32.743079 [INFO]   Worker 2 (GitHub_Actions_1000011237): status=complete, processed=743779, healthy=13667, remaining=0
+2026/08/26 16:14:32.745592 [INFO]   → Collected 13667 healthy configs from worker_2
+2026/08/26 16:14:32.745746 [INFO]   Worker 3 (GitHub_Actions_1000011235): status=complete, processed=743779, healthy=12853, remaining=0
+2026/08/26 16:14:32.747305 [INFO]   → Collected 12853 healthy configs from worker_3
+2026/08/26 16:14:32.747322 [INFO] 
+2026/08/26 16:14:32.747327 [INFO] ╔══════════════════════════════════════════════╗
+2026/08/26 16:14:32.747332 [INFO] ║            MERGE SUMMARY                     ║
+2026/08/26 16:14:32.747337 [INFO] ╠══════════════════════════════════════════════╣
+2026/08/26 16:14:32.747343 [INFO] ║  Workers reported: 2                         ║
+2026/08/26 16:14:32.747347 [INFO] ║  Total processed:  1487558                   ║
+2026/08/26 16:14:32.747351 [INFO] ║  Total healthy:    52574                     ║
+2026/08/26 16:14:32.747355 [INFO] ║  Total failed:     1461038                   ║
+2026/08/26 16:14:32.747360 [INFO] ╚══════════════════════════════════════════════╝
+2026/08/26 16:14:32.759768 [INFO] After dedup: 52569 unique healthy configs
+2026/08/26 16:14:32.759799 [INFO] Sorting configs by speed (fastest first)...
+2026/08/26 16:14:35.749817 [INFO] Speed range: 124548 KB/s (fastest) → 0 KB/s (slowest)
+2026/08/26 16:14:35.763682 [INFO] 📋 Copied to configs/lastworked.txt (52569 configs)
+2026/08/26 16:14:35.763734 [INFO] Output file size: 12.80 MB (within limits)
+2026/08/26 16:14:35.763899 [INFO] ✅ Merge complete: 52569 healthy configs → configs/GitHub_Actions_1000011238/worked.txt
