@@ -1,0 +1,73 @@
+{
+  "runner": "GitHub_Actions_1000012784",
+  "timestamp": "2026-09-25T19:15:19Z",
+  "total_failed": 1981280,
+  "total_healthy": 34114,
+  "total_processed": 2015394,
+  "workers": [
+    {
+      "chunk_id": 0,
+      "runner_name": "GitHub_Actions_1000012782",
+      "status": "complete",
+      "total_in_chunk": 503849,
+      "processed": 503849,
+      "ping_pass": 11283,
+      "ping_fail": 492566,
+      "speed_pass": 9680,
+      "speed_fail": 1603,
+      "healthy_output": 9680,
+      "remaining": 0,
+      "started_at": "2026-09-25T17:42:05Z",
+      "finished_at": "2026-09-25T19:10:36Z",
+      "duration_secs": 5310.77817402
+    },
+    {
+      "chunk_id": 1,
+      "runner_name": "GitHub_Actions_1000012783",
+      "status": "complete",
+      "total_in_chunk": 503849,
+      "processed": 503849,
+      "ping_pass": 9780,
+      "ping_fail": 494069,
+      "speed_pass": 8371,
+      "speed_fail": 1409,
+      "healthy_output": 8371,
+      "remaining": 0,
+      "started_at": "2026-09-25T17:41:43Z",
+      "finished_at": "2026-09-25T19:01:57Z",
+      "duration_secs": 4813.764474628
+    },
+    {
+      "chunk_id": 2,
+      "runner_name": "GitHub_Actions_1000012780",
+      "status": "complete",
+      "total_in_chunk": 503848,
+      "processed": 503848,
+      "ping_pass": 10327,
+      "ping_fail": 493521,
+      "speed_pass": 8903,
+      "speed_fail": 1424,
+      "healthy_output": 8903,
+      "remaining": 0,
+      "started_at": "2026-09-25T17:37:27Z",
+      "finished_at": "2026-09-25T18:58:00Z",
+      "duration_secs": 4832.397294132
+    },
+    {
+      "chunk_id": 3,
+      "runner_name": "GitHub_Actions_1000012781",
+      "status": "complete",
+      "total_in_chunk": 503848,
+      "processed": 503848,
+      "ping_pass": 8426,
+      "ping_fail": 495422,
+      "speed_pass": 7160,
+      "speed_fail": 1266,
+      "healthy_output": 7160,
+      "remaining": 0,
+      "started_at": "2026-09-25T17:41:34Z",
+      "finished_at": "2026-09-25T19:06:00Z",
+      "duration_secs": 5065.375771566
+    }
+  ]
+}
